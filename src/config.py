@@ -27,4 +27,4 @@ class Config(object):
         log.setLevel(logging.DEBUG)
         log.addHandler(console)
         
-        log.info("Logging setup complete")    
+        log.info("Logging setup complete")

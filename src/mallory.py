@@ -102,10 +102,10 @@ try:
     # These protocols have dependencies and may not be safe to import 
     from protocol import sslproto, http, ssh, https
     from plugin_managers import http_plugin_manager
-except ImportError:
+except ImportError, msg:
     print "ImportError: Trouble importing protocols with dependencies. " \
             "Proceeding with minimal protocol support."
-
+    print "Error was %s" % str(msg)
 
 # Config object is global. Buyer beware.
 config = config.Config()

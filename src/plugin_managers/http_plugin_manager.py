@@ -2,6 +2,7 @@
 import config
 
 import thread
+import logging
 
 from plugin_managers import base
 from plugin.session_hijack import SessionHijack
@@ -19,6 +20,7 @@ except ImportError:
 class HttpPluginManager (base.Base):
     def __init__(self, rules = [], config = config.Config()):
         base.Base.__init__(self)
+        self.log = logging.getLogger("mallorymain.plugins")
         self.server_port = 80
         self.plugin_config()
 
