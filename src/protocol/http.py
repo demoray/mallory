@@ -168,9 +168,7 @@ class HTTP(TcpProtocol):
         self.log = logging.getLogger("mallorymain")
         self.log.info("HTTP protocol handler initialized")
         self.supports = {malloryevt.STARTS2C:True, malloryevt.STARTC2S:True}        
-        
-        
-                        
+
     def forward_c2s(self, conndata):
         try:
             self.log.debug("HTTP: starting http request (c2s)")
@@ -190,9 +188,8 @@ class HTTP(TcpProtocol):
                 self.log.debug("HTTP: c2s: Request: \r\n%s" % (str(request.headers)))
             
             str_request = str(request)
-            self.trafficdb.qFlow.put((conndata.conncount, \
-                conndata.direction, 0, time.time(), repr(str_request))) 
-            self.destination.sendall(str(request))
+            self.trafficdb.qFlow.put((conndata.conncount, conndata.direction, 0, time.time(), repr(str_request)))
+            self.destination.sendall(str_request)
         
         except:
             traceback.print_exc()
@@ -258,8 +255,7 @@ class HTTP(TcpProtocol):
         str_status = responses[response.status]
         
         # HTTP status line
-        responseline = "HTTP/1.1 %d %s\r\n" % \
-            (response.status, str_status)
+        responseline = "HTTP/1.1 %d %s\r\n" % (response.status, str_status)
         self.source.sendall(responseline)
         
         # HTTP Headers
@@ -285,14 +281,6 @@ class HTTP(TcpProtocol):
         self.destination.shutdown(socket.SHUT_RD)
         self.source.shutdown(socket.SHUT_WR)
 
-    def flip_image(self, imagein):
-        outstr = ""
-        outfile = StringIO.StringIO(outstr)
-        img = Image.open(StringIO.StringIO(imagein))                            
-        out = img.transpose(Image.ROTATE_180)                                                
-        out.save(outfile, img.format)
-        return outfile.getvalue()
-    
 class HTTPException(Exception):
     # Subclasses that define an __init__ must call Exception.__init__
     # or define self.args.  Otherwise, str() will fail.
@@ -396,12 +384,10 @@ class HTTPRequest:
         if self.command != 'HEAD' and code >= 200 and code not in (204, 304):
             self.wfile.write(content)
 
-    
     def begin(self):        
         self.raw_requestline = self.fp.readline()
         self.parse_request()
-        self.log.info("HTTPRequest: %s : %s : %s" % \
-                      (self.request_version, self.command, self.path))
+        self.log.info("HTTPRequest: %s : %s : %s" % (self.request_version, self.command, repr(self.path)))
         
     def parse_request(self):
         """Parse a request (internal).

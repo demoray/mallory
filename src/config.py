@@ -14,9 +14,7 @@ class Config(object):
         """
         fmt = "[*] [%(asctime)s] %(levelname)s:%(message)s"
     
-        logging.basicConfig(filename="mallory.log",
-                            filemode="w",
-                            format=fmt)        
+        logging.basicConfig(filename="mallory.log", filemode="w", format=fmt)        
     
         console = logging.StreamHandler(sys.stdout)
         console.setLevel(logging.DEBUG)
