@@ -173,7 +173,7 @@ class HTTP(TcpProtocol):
                         
     def forward_c2s(self, conndata):
         try:
-            self.log.debug("HTTP: starting http request")
+            self.log.debug("HTTP: starting http request (c2s)")
             request = HTTPRequest(self.source)
             request.begin()
             #RAJRAJRAJ
@@ -183,7 +183,7 @@ class HTTP(TcpProtocol):
             #Each proto will have diff hooks points.
             #STill need to think about blocking and non blocking problem
             if self.plugin_manager != None:
-                request = self.plugin_manager.process(event="HTTP:c2s", data=request)
+                request = self.plugin_manager.process(event="HTTP:c2s", data=request, client_ip=self.source.getpeername()[0], server_ip=self.destination.getpeername()[0])
             
             if self.config.debug > 1:
                 self.log.debug("HTTP: c2s: Request: \r\n%s" % (repr(str(request))))
@@ -203,7 +203,7 @@ class HTTP(TcpProtocol):
         server. It encapsulates the HTTP response in an object and provides 
         a high level interface to manipulate HTTP content. 
         """
-        self.log.debug("HTTP: starting s2c")
+        self.log.debug("HTTP: starting http response (s2c)")
         response = HTTPResponse(self.destination)
         
         response.begin()        
@@ -252,9 +252,7 @@ class HTTP(TcpProtocol):
         response.clean_body = responsebody
         
         if self.plugin_manager != None:
-            response = self.plugin_manager.process(event="HTTP:s2c", data=response)
-        
-       
+            response = self.plugin_manager.process(event="HTTP:s2c", data=response, client_ip=self.source.getpeername()[0], server_ip=self.destination.getpeername()[0])
                 
         # Push the response off to the victim
         str_status = responses[response.status]
